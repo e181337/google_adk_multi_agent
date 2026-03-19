@@ -31,18 +31,19 @@ class RiskAgent:
         query_text = query_text.strip()
 
         return query_text
+
     
     def _match_risk_rules(self, query_text: str) -> list[str]:
-
-        matched_labels = set()    
+        matched_labels = set()
 
         for rule in self.RISK_TOPIC_RULES:
-            for value in rule.phrases:
-              if value in query_text:
+            for phrase in rule.phrases:
+                pattern = rf"\b{re.escape(phrase)}\b"
+                if re.search(pattern, query_text):
                     matched_labels.add(rule.label)
-        
+
         return list(matched_labels)
-    
+        
     def run(self, query_text: str, verification_ok: bool, compliance_ok: bool) -> RiskResult:
 
         self._check_type(query_text, "query_text", str)
