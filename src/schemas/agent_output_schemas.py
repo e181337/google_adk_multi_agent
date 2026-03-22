@@ -9,18 +9,22 @@ class IntentTriageOutput(BaseModel):
                                                 description="Search query to use for retrieving relevant information if retrieval is needed; otherwise null.")
 
 class DraftingOutput(BaseModel):
-    final_answer: str = Field(description="Final user-facing response generated based on the drafting goal and available context.")
-    used_context: Optional[list[str]] = Field(default=None,
-                                              description="List of retrieved context snippets that were used to generate the final answer, if any.")
+    final_answer: str = Field(
+                        description="Final user-facing response generated based on the drafting goal and available context.")
+    used_context: list[str] = Field(default_factory=list,
+                        description="List of retrieved context snippets used to generate the final answer.")
     confidence: Optional[str] = Field(default=None,
-                                      description="Optional confidence level of the generated answer (e.g., 'low', 'medium', 'high').")
+                        description="Optional confidence level of the generated answer (e.g., 'low', 'medium', 'high').")
     
 
 class RootOutput(BaseModel):
-    final_answer: str = Field(description="Final user-facing response generated after coordinating triage, retrieval, and drafting.")
-    used_retrieval: Optional[bool] = Field(default=None,
-                                           description="Indicates whether retrieval was used to generate the final answer.")
-    retrieval_results_count: Optional[int] = Field(default=None,
-                                                   description="Number of retrieved context items used in generating the response.")
-    confidence: Optional[str] = Field(default=None,
-                                      description="Optional confidence level of the final answer (e.g., 'low', 'medium', 'high').")
+    final_answer: str = Field(
+        description="Final user-facing response generated after coordinating triage, retrieval, and drafting.")
+    used_retrieval: bool = Field(
+        description="Indicates whether retrieval was used to generate the final answer.")
+    retrieval_results_count: int = Field(
+        default=0,
+        description="Number of retrieved context items used or considered in generating the response.")
+    confidence: Optional[str] = Field(
+        default=None,
+        description="Optional confidence level of the final answer (e.g., 'low', 'medium', 'high').")
