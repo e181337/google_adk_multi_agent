@@ -42,6 +42,9 @@ class ModelSettings(BaseSettings):
     planner_model: str = "gemini-2.5-flash"
     answer_model: str = "gemini-2.5-pro"
     verifier_model: str = "gemini-2.5-flash"
+    triage_model: str = "gemini-2.5-flash"
+    drafting_model: str = "gemini-2.5-flash"
+    root_model: str = "gemini-2.5-flash"
     temperature: float = Field(default=0.2, ge=0, le=2)
     max_output_tokens: int = Field(default=2048, ge=128, le=8192)
     router_model: Optional[str] = None

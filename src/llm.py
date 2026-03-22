@@ -1,4 +1,6 @@
 from typing import Protocol, Optional
+from src.config import GoogleSettings, ModelSettings
+from google import genai
 
 class LlmClient(Protocol):
     def generate(self,
@@ -52,6 +54,14 @@ class GeminiRequestBuilder:
 class GoogleAdkLlmClient:
     def __init__(self, model_name: str):
         self.model_name = model_name
+        self.cloud_project = GoogleSettings.cloud_project
+        self.cloud_location = GoogleSettings.cloud_location
+        self.genai_use_vertexai = GoogleSettings.genai_use_vertexai
+        self.temperature = ModelSettings.temperature
+        self.max_output_tokens = ModelSettings.max_output_tokens
+        self.client = genai.Client(vertexai=self.genai_use_vertexai,
+                                   project=self.cloud_project,
+                                   location=self.cloud_location)
 
     def _validate_user_prompt(self, user_prompt: str) -> None:
         if not user_prompt or user_prompt.strip() == "":
@@ -74,8 +84,7 @@ class GoogleAdkLlmClient:
             if not isinstance(max_output_tokens, int) :
                 raise ValueError("max_output_tokens should be int")
             if max_output_tokens <= 0 :
-                raise ValueError("max_output_tokens should be int")
-            
+                raise ValueError("max_output_tokens should be positive")
         
     def generate(self,
                 user_prompt: str,
@@ -88,13 +97,37 @@ class GoogleAdkLlmClient:
         self._validate_temperature(temperature)
         self._validate_max_output_tokens(max_output_tokens)
 
-        payload  = GeminiRequestBuilder.build(self.model_name,
-                                              user_prompt, 
-                                              system_prompt,
-                                              temperature,
-                                              max_output_tokens)
-                    
-        return f"Model: {self.model_name} | System: {system_prompt} | User: {user_prompt}"
-        
+        if temperature is None:
+            model_temperature = self.temperature
+        else:
+            model_temperature = temperature
 
+        if max_output_tokens is None:
+            model_token = self.max_output_tokens 
+        else:
+            model_token = max_output_tokens
+
+        payload = GeminiRequestBuilder.build(self.model_name,
+                                            user_prompt, 
+                                            system_prompt,
+                                            model_temperature,
+                                            model_token)
         
+        try:
+
+            response = self.client.models.generate_content(
+                                model=payload.get("model"),
+                                contents=payload.get("contents"),
+                                system_instruction=payload.get("system_instruction"),
+                                generation_config=payload.get("generation_config")) 
+        except Exception as e:
+            raise RuntimeError(f"LLM call failed {e}")
+        
+        if response.text is None:
+            raise RuntimeError("empty response")
+        
+        if str(response.text).strip() == "":
+            raise RuntimeError("empty response")
+                    
+        return str(response.text)
+    

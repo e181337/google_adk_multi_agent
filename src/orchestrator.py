@@ -16,7 +16,7 @@ from src.agents.escalation import EscalationHandoffAgent
 from src.agents.memory import ConversationMemoryAgent
 from src.agents.audit import AuditObservabilityAgent
 from src.agents.supervisor import OrchestratorSupervisorAgent
-
+from src.orchestrator import MultiAgentOrchestrator, OrchestratorConfig
 @dataclass
 class OrchestratorConfig:
     max_retries: int = 2
