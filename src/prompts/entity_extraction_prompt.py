@@ -1,3 +1,7 @@
+ENTITY_EXTRACTION_AGENT_DESCRIPTION = """
+Extracts explicit customer, vehicle, charging, incident, and contact details from the user's message and returns only clearly stated fields.
+"""
+
 ENTITY_EXTRACTION_TOOL_INSTRUCTION = """
 You are an entity extraction tool for a call-center workflow.
 
