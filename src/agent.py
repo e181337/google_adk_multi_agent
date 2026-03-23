@@ -1,35 +1,45 @@
 from google.adk.agents import LlmAgent
-from src.prompts.triage_agent_prompt import TRIAGE_AGENT_INSTRUCTION, TRIAGE_AGENT_DESCRIPTION
-from src.prompts.drafting_agent_prompt import DRAFTING_AGENT_INSTRUCTION, DRAFTING_AGENT_DESCRIPTION
+
 from src.prompts.root_agent_prompt import ROOT_AGENT_INSTRUCTION , ROOT_AGENT_DESCRIPTION
+from src.prompts.summary_agent_prompt import SUMMARY_AGENT_INSTRUCTION, SUMMARY_AGENT_DESCRIPTION
+from src.prompts.translation_agent_prompt import TRANSLATION_AGENT_INSTRUCTION, TRANSLATION_AGENT_DESCRIPTION
+from src.prompts.taxonomy_agent_prompt import TAXONOMY_AGENT_INSTRUCTION, TAXONOMY_AGENT_DESCRIPTION
+
 from src.config import get_model_settings
-from src.schemas.agent_output_schemas import IntentTriageOutput, DraftingOutput, RootOutput
 from src.tools.retrieval_tool import retrieval_tool
+from src.tools.safety_tool import safety_tool
+from src.tools.extraction_tool import entity_extraction_tool
 
 model_settings = get_model_settings()
 
-triage_agent = LlmAgent(name="triage_agent",
-                    description=TRIAGE_AGENT_DESCRIPTION,
-                    model=model_settings.triage_model,
-                    instruction=TRIAGE_AGENT_INSTRUCTION,
-                    output_schema=IntentTriageOutput,
-                    output_key="triage_result"
-                    )
+summary_agent = LlmAgent(name="summary_agent",
+                         description=SUMMARY_AGENT_DESCRIPTION,
+                         model=model_settings.summary_model,
+                         instruction=SUMMARY_AGENT_INSTRUCTION,
+                         output_key="summary_result"
+                         )
 
-drafting_agent = LlmAgent(name="drafting_agent",
-                        description=DRAFTING_AGENT_DESCRIPTION,
-                        model=model_settings.drafting_model,
-                        instruction=DRAFTING_AGENT_INSTRUCTION,
-                        output_schema=DraftingOutput,
-                        output_key="drafting_result"
-                        )
+translation_agent = LlmAgent(name="translation_agent",
+                         description=TRANSLATION_AGENT_DESCRIPTION,
+                         model=model_settings.translation_model,
+                         instruction=TRANSLATION_AGENT_INSTRUCTION,
+                         output_key="translation_result"
+                         )
 
-root_agent = LlmAgent(name="root_agent",
-                    description=ROOT_AGENT_DESCRIPTION,
-                    model=model_settings.root_model,
-                    instruction=ROOT_AGENT_INSTRUCTION,
-                    output_schema=RootOutput,
-                    output_key="root_result",
-                    tools=[retrieval_tool],
-                    sub_agents=[triage_agent, drafting_agent]
-                    )
+taxonomy_agent = LlmAgent(name="taxonomy_agent",
+                         description=TAXONOMY_AGENT_DESCRIPTION,
+                         model=model_settings.taxonomy_model,
+                         instruction=TAXONOMY_AGENT_INSTRUCTION,
+                         output_key="taxonomy_result"
+                         )
+
+
+root_agent = LlmAgent(
+    name="root_agent",
+    description=ROOT_AGENT_DESCRIPTION,
+    model=model_settings.root_model,
+    instruction=ROOT_AGENT_INSTRUCTION,
+    output_key="root_result",
+    tools=[safety_tool, retrieval_tool, entity_extraction_tool],
+    sub_agents=[summary_agent, translation_agent, taxonomy_agent]
+)

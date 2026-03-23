@@ -1,5 +1,4 @@
 from typing import Any
-from google.adk.tools import tool
 
 from src.data.knowledge_base import KNOWLEDGE_BASE, KnowledgeBaseChunk
 
@@ -22,8 +21,6 @@ def _score_chunk(tokens: list[str], chunk: KnowledgeBaseChunk) -> int:
 
     return score
 
-
-@tool
 def retrieval_tool(query_text: str, max_results: int = 3) -> list[dict[str, Any]]:
     if not query_text or not query_text.strip():
         raise ValueError("query_text cannot be empty")

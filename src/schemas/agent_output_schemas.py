@@ -28,3 +28,14 @@ class RootOutput(BaseModel):
     confidence: Optional[str] = Field(
         default=None,
         description="Optional confidence level of the final answer (e.g., 'low', 'medium', 'high').")
+
+class EntityExtractionOutput(BaseModel):
+    customer_name: Optional[str] = Field(default=None)
+    email: Optional[str] = Field(default=None)
+    phone: Optional[str] = Field(default=None)
+    membership_type: Optional[str] = Field(default=None)
+    vehicle_model: Optional[str] = Field(default=None)
+    vehicle_identification_number: Optional[str] = Field(default=None)
+    charging_station: Optional[str] = Field(default=None)
+    accident_location: Optional[str] = Field(default=None)
+    accident_type: Optional[str] = Field(default=None)

@@ -43,6 +43,10 @@ class ModelSettings(BaseSettings):
     answer_model: str = "gemini-2.5-pro"
     verifier_model: str = "gemini-2.5-flash"
     triage_model: str = "gemini-2.5-flash"
+    summary_model: str = "gemini-2.5-flash"
+    translation_model: str = "gemini-2.5-flash"
+    taxonomy_model: str = "gemini-2.5-flash"
+    extraction_model: str = "gemini-2.5-flash"
     drafting_model: str = "gemini-2.5-flash"
     root_model: str = "gemini-2.5-flash"
     temperature: float = Field(default=0.2, ge=0, le=2)
